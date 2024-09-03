@@ -80,18 +80,10 @@ pub async fn seed_tasks(
 	Ok(tasks)
 }
 
-// pub async fn seed_author(
-// 	ctx: &Ctx,
-// 	mm: &ModelManager,
-// 	name: &str,
-// ) -> model::Result<i64> {
-// 	AuthorBmc::create(
-// 		ctx,
-// 		mm,
-// 		AuthorForCreate {
-// 			name: name.to_string(),
-// 			bio: bio.to_string(),
-// 		},
-// 	)
-// 	.await
-// }
+pub async fn seed_author(
+	ctx: &Ctx,
+	mm: &ModelManager,
+	pram: AuthorForCreate,
+) -> model::Result<i64> {
+	AuthorBmc::create(ctx, mm, pram).await
+}

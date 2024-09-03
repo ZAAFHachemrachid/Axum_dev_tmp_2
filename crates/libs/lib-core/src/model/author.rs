@@ -45,19 +45,19 @@ pub struct Author {
 #[derive(Fields, Deserialize)]
 pub struct AuthorForCreate {
 	pub name: String,
-	pub bio: Option<String>,
+	pub bio: String,
 }
 
 #[derive(Fields, Deserialize)]
 pub struct AuthorForUpdate {
 	pub name: Option<String>,
-	pub bio: Option<String>,
+	pub bio: String,
 }
 
 #[derive(Fields)]
 struct AuthorForCreateInner {
 	pub name: String,
-	pub bio: Option<String>,
+	pub bio: String,
 	pub cid: i64,
 	pub ctime: OffsetDateTime,
 	pub mid: i64,
@@ -92,14 +92,6 @@ impl AuthorBmc {
 		mm: &ModelManager,
 		author_c: AuthorForCreate,
 	) -> Result<i64> {
-		let author_c = AuthorForCreateInner {
-			name: author_c.name,
-			bio: author_c.bio,
-			cid: ctx.user_id(),
-			ctime: OffsetDateTime::now_utc(),
-			mid: ctx.user_id(),
-			mtime: OffsetDateTime::now_utc(),
-		};
 		base::create::<Self, _>(ctx, mm, author_c).await
 	}
 
@@ -140,12 +132,12 @@ mod tests {
 	use crate::_dev_utils;
 	use crate::model::author::AuthorBmc;
 	use crate::model::Error;
-	use anyhow::Result;
-	use lib_utils::time::{format_time, now_utc};
-	use serde_json::json;
+	// use anyhow::Result;
+	// use lib_utils::time::{format_time, now_utc};
+	// use serde_json::json;
 	use serial_test::serial;
-	use std::time::Duration;
-	use tokio::time::sleep;
+	// use std::time::Duration;
+	// use tokio::time::sleep;
 	#[serial]
 	#[tokio::test]
 	async fn test_create_author_ok() -> Result<()> {
@@ -154,16 +146,68 @@ mod tests {
 		let ctx = Ctx::root_ctx();
 		let author_c = AuthorForCreate {
 			name: "author1".to_string(),
-			bio: Some("bio1".to_string()),
+			bio: "bio1".to_string(),
 		};
+		let fx_author_id = _dev_utils::seed_author(&ctx, &mm, author_c).await?;
 		// -- Create
-		let id = AuthorBmc::create(&ctx, &mm, author_c).await?;
 		// -- Get
-		let author = AuthorBmc::get(&ctx, &mm, id).await?;
+		let author = AuthorBmc::get(&ctx, &mm, fx_author_id).await?;
 		assert_eq!(author.name, "author1");
 		assert_eq!(author.bio, Some("bio1".to_string()));
 		// -- Tear-down
-		AuthorBmc::delete(&ctx, &mm, id).await?;
+		AuthorBmc::delete(&ctx, &mm, fx_author_id).await?;
+		Ok(())
+	}
+
+	#[serial]
+	#[tokio::test]
+	async fn test_get_err_not_found() -> Result<()> {
+		// -- Setup & Fixtures
+		let mm = _dev_utils::init_test().await;
+		let ctx = Ctx::root_ctx();
+		let fx_id = 100;
+
+		// -- Exec
+		let res = AuthorBmc::get(&ctx, &mm, fx_id).await;
+
+		// -- Check
+		assert!(
+			matches!(
+				res,
+				Err(Error::EntityNotFound {
+					entity: "author",
+					id: 100
+				})
+			),
+			"EntityNotFound not matching"
+		);
+
+		Ok(())
+	}
+
+	#[serial]
+	#[tokio::test]
+	async fn test_list_all_ok() -> Result<()> {
+		// -- Setup & Fixtures
+		let mm = _dev_utils::init_test().await;
+		let ctx = Ctx::root_ctx();
+		let author_c1 = AuthorForCreate {
+			name: "author1".to_string(),
+			bio: "bio1".to_string(),
+		};
+		let author_c2 = AuthorForCreate {
+			name: "author2".to_string(),
+			bio: "bio2".to_string(),
+		};
+		let id_1 = _dev_utils::seed_author(&ctx, &mm, author_c1).await?;
+		let id_2 = _dev_utils::seed_author(&ctx, &mm, author_c2).await?;
+
+		let authors = AuthorBmc::list(&ctx, &mm, None, None).await?;
+		assert_eq!(authors.len(), 2, "there should be 2 authors");
+
+		AuthorBmc::delete(&ctx, &mm, id_1).await?;
+		AuthorBmc::delete(&ctx, &mm, id_2).await?;
+
 		Ok(())
 	}
 }
