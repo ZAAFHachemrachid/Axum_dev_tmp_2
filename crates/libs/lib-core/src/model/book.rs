@@ -56,6 +56,8 @@ pub struct BookForCreate {
 	pub author_id: i64,
 	pub publisher_id: i64,
 	pub category_id: i64,
+	pub description: String,
+
 	// pub published_date: OffsetDateTime,
 	pub isbn: String,
 }
@@ -66,6 +68,8 @@ pub struct BookForUpdate {
 	pub author_id: Option<i64>,
 	pub publisher_id: Option<i64>,
 	pub category_id: Option<i64>,
+
+	pub description: String,
 	// pub published_date: Option<OffsetDateTime>,
 	pub isbn: Option<String>,
 }
@@ -76,6 +80,8 @@ struct BookForCreateInner {
 	pub author_id: i64,
 	pub publisher_id: i64,
 	pub category_id: i64,
+	pub description_o: String,
+
 	// pub published_date: OffsetDateTime,
 	pub isbn: String,
 }
@@ -86,6 +92,7 @@ pub struct BookFilter {
 	author_id: Option<OpValsInt64>,
 	publisher_id: Option<OpValsInt64>,
 	category_id: Option<OpValsInt64>,
+	description: Option<OpValsString>,
 	// published_date: Option<OpValsValue>,
 	isbn: Option<OpValsString>,
 
@@ -111,14 +118,6 @@ impl BookBmc {
 		mm: &ModelManager,
 		book_c: BookForCreate,
 	) -> Result<i64> {
-		let book_c = BookForCreateInner {
-			title: book_c.title,
-			author_id: book_c.author_id,
-			publisher_id: book_c.publisher_id,
-			category_id: book_c.category_id,
-			// published_date: book_c.published_date,
-			isbn: book_c.isbn,
-		};
 		base::create::<Self, _>(ctx, mm, book_c).await
 	}
 

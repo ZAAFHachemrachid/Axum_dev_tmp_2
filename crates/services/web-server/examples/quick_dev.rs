@@ -189,7 +189,8 @@ async fn main() -> Result<()> {
 			"method": "create_category",
 			"params": {
 				"data": {
-					"name": "Category Name"
+					"name": "Category Name",
+		"description": "Category Type, Category Type 2",
 				}
 			}
 		}),
@@ -207,12 +208,27 @@ async fn main() -> Result<()> {
 					"author_id": 1000,
 					"publisher_id": 1000,
 					"category_id": 1000,
+				  "description": "Book Description",
 					"isbn": "123-4567890123"
+
 				}
 			}
 		}),
 	);
 	req_book_create.await?.print().await?;
+
+	let req_book_list = hc.do_post(
+		"/api/rpc",
+		json!({
+			"id": 1,
+			"method": "list_books",
+			"params": {
+				"filters": {
+				}
+			}
+		}),
+	);
+	req_book_list.await?.print().await?;
 	// let title = "Example Book Title";
 	// let author_id = 123;
 	// let publisher_id = 456;
