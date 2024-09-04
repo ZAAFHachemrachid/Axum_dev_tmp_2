@@ -26,6 +26,8 @@ use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 use sqlx::types::time::OffsetDateTime;
 use sqlx::FromRow;
+use time::format_description::FormatItem;
+use time::serde::format_description;
 
 // region:    --- Book Types
 #[serde_as]
@@ -36,10 +38,10 @@ pub struct Book {
 	pub author_id: i64,
 	pub publisher_id: i64,
 	pub category_id: i64,
-	// #[serde_as(as = "Rfc3339")]
-	// pub published_date: OffsetDateTime,
+	#[serde_as(as = "Rfc3339")]
+	pub published_date: OffsetDateTime,
 	pub isbn: String,
-
+	pub description: String,
 	// -- Timestamps
 	//    (creator and last modified user_id/time)
 	pub cid: i64,
@@ -49,7 +51,7 @@ pub struct Book {
 	#[serde_as(as = "Rfc3339")]
 	pub mtime: OffsetDateTime,
 }
-
+#[serde_as]
 #[derive(Fields, Deserialize)]
 pub struct BookForCreate {
 	pub title: String,
@@ -57,11 +59,11 @@ pub struct BookForCreate {
 	pub publisher_id: i64,
 	pub category_id: i64,
 	pub description: String,
-
-	// pub published_date: OffsetDateTime,
+	#[serde_as(as = "Rfc3339")]
+	pub published_date: OffsetDateTime,
 	pub isbn: String,
 }
-
+#[serde_as]
 #[derive(Fields, Deserialize)]
 pub struct BookForUpdate {
 	pub title: Option<String>,
@@ -70,7 +72,8 @@ pub struct BookForUpdate {
 	pub category_id: Option<i64>,
 
 	pub description: String,
-	// pub published_date: Option<OffsetDateTime>,
+	#[serde_as(as = "Rfc3339")]
+	pub published_date: OffsetDateTime,
 	pub isbn: Option<String>,
 }
 
@@ -82,7 +85,7 @@ struct BookForCreateInner {
 	pub category_id: i64,
 	pub description_o: String,
 
-	// pub published_date: OffsetDateTime,
+	pub published_date: String,
 	pub isbn: String,
 }
 #[derive(FilterNodes, Deserialize, Default, Debug)]
@@ -93,7 +96,9 @@ pub struct BookFilter {
 	publisher_id: Option<OpValsInt64>,
 	category_id: Option<OpValsInt64>,
 	description: Option<OpValsString>,
-	// published_date: Option<OpValsValue>,
+
+	#[modql(to_sea_value_fn = "time_to_sea_value")]
+	published_date: Option<OpValsValue>,
 	isbn: Option<OpValsString>,
 
 	cid: Option<OpValsInt64>,

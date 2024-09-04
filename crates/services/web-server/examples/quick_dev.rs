@@ -196,7 +196,7 @@ async fn main() -> Result<()> {
 		}),
 	);
 	req_category_create.await?.print().await?;
-
+	let description = "Category Type, Category Type 2";
 	let req_book_create = hc.do_post(
 		"/api/rpc",
 		json!({
@@ -208,15 +208,14 @@ async fn main() -> Result<()> {
 					"author_id": 1000,
 					"publisher_id": 1000,
 					"category_id": 1000,
-				  "description": "Book Description",
-					"isbn": "123-4567890123"
-
+					"description": "Category Type, Category Type 2",
+					"isbn": "123-4567890123",
+									"published_date": "2024-09-04T00:00:00Z" // RFC 3339 format with time // RFC 3339 format
 				}
 			}
 		}),
 	);
 	req_book_create.await?.print().await?;
-
 	let req_book_list = hc.do_post(
 		"/api/rpc",
 		json!({
