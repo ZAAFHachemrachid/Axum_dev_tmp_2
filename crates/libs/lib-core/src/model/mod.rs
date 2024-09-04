@@ -21,9 +21,11 @@
 pub mod author;
 mod base;
 pub mod book;
+pub mod category;
 mod error;
 pub mod modql_utils;
 pub mod project;
+pub mod publisher;
 mod store;
 pub mod task;
 pub mod user;

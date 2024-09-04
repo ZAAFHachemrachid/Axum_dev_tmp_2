@@ -126,29 +126,116 @@ async fn main() -> Result<()> {
 		}),
 	);
 	req_list_b_tasks.await?.print().await?;
-	let title = "Example Book Title";
-	let author_id = 123;
-	let publisher_id = 456;
-	let category_id = 789;
-	let isbn = "123-4567890123";
-	let req_add_book = hc.do_post(
+	let req_author_create = hc.do_post(
+		"/api/rpc",
+		json!({
+			"id": 1,
+			"method": "create_author",
+			"params": {
+				"data": {
+					"name": "Author Name",
+					"bio": "Author Bio"
+				}
+			}
+		}),
+	);
+
+	req_author_create.await?.print().await?;
+	let req_author_list = hc.do_post(
+		"/api/rpc",
+		json!({
+			"id": 1,
+			"method": "list_authors",
+			"params": {
+				"filters": {
+					"name": {"$contains": "Author"}
+				}
+			}
+		}),
+	);
+	req_author_list.await?.print().await?;
+	let req_publisher_create = hc.do_post(
+		"/api/rpc",
+		json!({
+			"id": 1,
+			"method": "create_publisher",
+			"params": {
+				"data": {
+					"name": "Publisher Name",
+					"address": "Publisher Address"
+				}
+			}
+		}),
+	);
+	req_publisher_create.await?.print().await?;
+	let req_publisher_list = hc.do_post(
+		"/api/rpc",
+		json!({
+			"id": 1,
+			"method": "list_publishers",
+			"params": {
+				"filters": {
+					"name": {"$contains": "Publisher"}
+				}
+			}
+		}),
+	);
+
+	req_publisher_list.await?.print().await?;
+	let req_category_create = hc.do_post(
+		"/api/rpc",
+		json!({
+			"id": 1,
+			"method": "create_category",
+			"params": {
+				"data": {
+					"name": "Category Name"
+				}
+			}
+		}),
+	);
+	req_category_create.await?.print().await?;
+
+	let req_book_create = hc.do_post(
 		"/api/rpc",
 		json!({
 			"id": 1,
 			"method": "create_book",
 			"params": {
 				"data": {
-		"title": title,
-				"author_id": author_id,
-				"publisher_id": publisher_id,
-				"category_id": category_id,
-				"isbn": isbn,
-				}}
-
+					"title": "Book Title",
+					"author_id": 1000,
+					"publisher_id": 1000,
+					"category_id": 1000,
+					"isbn": "123-4567890123"
+				}
+			}
 		}),
 	);
-	req_add_book.await?.print().await?;
-
+	req_book_create.await?.print().await?;
+	// let title = "Example Book Title";
+	// let author_id = 123;
+	// let publisher_id = 456;
+	// let category_id = 789;
+	// let isbn = "123-4567890123";
+	// let req_add_book = hc.do_post(
+	// 	"/api/rpc",
+	// 	json!({
+	// 		"id": 1,
+	// 		"method": "create_book",
+	// 		"params": {
+	// 			"data": {
+	// 	"title": title,
+	// 			"author_id": author_id,
+	// 			"publisher_id": publisher_id,
+	// 			"category_id": category_id,
+	// 			"isbn": isbn,
+	// 			}}
+	//
+	// 	}),
+	// );
+	// req_add_book.await?.print().await?;
+	//
 	let req_logoff = hc.do_post(
 		"/api/logoff",
 		json!({

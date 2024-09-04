@@ -5,7 +5,10 @@ use axum::routing::post;
 use axum::{Json, Router};
 use lib_core::model::ModelManager;
 use lib_rpc::router::RpcRouter;
-use lib_rpc::{book_rpc, project_rpc, task_rpc, RpcRequest, RpcResources};
+use lib_rpc::{
+	author_rpc, book_rpc, category_rpc, project_rpc, publisher_rpc, task_rpc,
+	RpcRequest, RpcResources,
+};
 use serde_json::{json, Value};
 use std::sync::Arc;
 
@@ -32,7 +35,10 @@ pub fn routes(rpc_state: RpcState) -> Router {
 	let rpc_router = RpcRouter::new()
 		.extend(task_rpc::rpc_router())
 		.extend(project_rpc::rpc_router())
-		.extend(book_rpc::rpc_router());
+		.extend(book_rpc::rpc_router())
+		.extend(author_rpc::rpc_router())
+		.extend(category_rpc::rpc_router())
+		.extend(publisher_rpc::rpc_router());
 
 	// Build the Axum Router for '/rpc'
 	Router::new()

@@ -76,8 +76,6 @@ where
 	let mut fields = data.not_none_fields();
 	add_timestamps_for_create(&mut fields, ctx.user_id());
 	let (columns, sea_values) = fields.for_sea_insert();
-	println!("columns: {:?}", columns);
-	println!("sea_values: {:?}", sea_values);
 	// -- Build query
 	let mut query = Query::insert();
 	query

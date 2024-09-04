@@ -51,8 +51,11 @@ async fn main() -> Result<()> {
 		.layer(CookieManagerLayer::new())
 		.fallback_service(routes_static::serve_dir());
 
-	// region:    --- Start Server
-	// Note: For this block, ok to unwrap.
+	/*
+	region:    --- Start Server
+	Note: For this block, ok to unwrap.
+	Hello
+	*/
 	let listener = TcpListener::bind("127.0.0.1:8090").await.unwrap();
 	info!("{:<12} - {:?}\n", "LISTENING", listener.local_addr());
 	axum::serve(listener, routes_all.into_make_service())
